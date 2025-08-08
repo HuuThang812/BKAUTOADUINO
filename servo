@@ -1,0 +1,29 @@
+#include <Servo.h>
+
+Servo myServo;
+
+void setup() {
+  myServo.attach(11);         
+  Serial.begin(9600);        
+}
+
+void loop() {
+  
+  for (int pos = 0; pos <= 45; pos++) {
+    myServo.write(pos);       
+    Serial.print("Goc: ");    
+    Serial.println(pos);
+    delay(10);
+  }
+
+   
+  
+  for (int pos = 45; pos >= 0; pos--) {
+    myServo.write(pos);
+    Serial.print("Goc: ");
+    Serial.println(pos);
+    delay(15);
+  }
+
+ 
+}
