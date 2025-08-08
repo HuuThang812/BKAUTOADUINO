@@ -1,0 +1,187 @@
+// động cơ dc
+const int in1 = 8;
+const int in2 = 9;
+const int in3 = 10;
+const int in4 = 11;
+const int enA = 5;
+const int enB = 6;
+int speedPWM = 80;
+// 5 cảm biến dò line
+const int L_S = 2;
+const int L_SS = 12;
+const int S_S = 3;
+const int R_S = 4;
+const int R_SS = 13;
+// servo
+#include <Servo.h>
+Servo myservo;  
+int pos = 0;
+const int trig = 7;
+const int echo = 4;
+//
+int khoangcach;
+unsigned long thoigian;
+int gioihan = 20;
+int khoangcachtrai;
+int khoangcachphai;
+int dongcoservo = 10;
+
+void dokhoangcach(){
+  digitalWrite(trig, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig, LOW);
+  thoigian = pulseIn(echo, HIGH);
+  khoangcach = thoigian / 2 / 29.412;
+  
+}
+void dunglai(){
+  analogWrite(enA, 0);
+  analogWrite(enB, 0);
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, LOW);
+  }
+void dilui(){
+ analogWrite(enB, speedPWM-20); 
+  analogWrite(enA, speedPWM-20); 
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+  Serial.println("đi "); 
+  
+}
+void dithang(){
+  analogWrite(enB, speedPWM-20); 
+  analogWrite(enA, speedPWM-20); 
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+  Serial.println("di thẳng");
+}
+
+void disangphai(){
+  analogWrite(enB, speedPWM); 
+  analogWrite(enA, speedPWM); 
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+  Serial.println("sang phải");
+}
+
+void disangtrai(){
+  analogWrite(enB, speedPWM); 
+  analogWrite(enA, speedPWM); 
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+  Serial.println("sang trái");
+}
+void quaycbsangtrai(){
+  myservo.write(150);
+  delay(1000);
+  dokhoangcach();
+  myservo.write(90);
+}
+void quaycbsangphai(){
+  myservo.write(30);
+  delay(1000);
+  dokhoangcach();
+  myservo.write(90);
+}
+void resetservo(){
+  myservo.write(90);
+}
+void setup(){
+  Serial.begin(9600);
+  // động cơ dc
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
+  pinMode(in3, OUTPUT);
+  pinMode(in4, OUTPUT);
+  pinMode(enA, OUTPUT);
+  pinMode(enB, OUTPUT);
+  analogWrite(enB, speedPWM); 
+  analogWrite(enA, speedPWM);
+  // 5 cảm biến dò line
+  pinMode(L_S, INPUT);
+  pinMode(L_SS, INPUT);
+  pinMode(R_S, INPUT);
+  pinMode(R_SS, INPUT);
+  pinMode(S_S, INPUT);
+  // servo
+  myservo.attach(dongcoservo); 
+  pinMode(trig, OUTPUT);
+  pinMode(echo, INPUT);   
+
+  
+}
+
+
+void loop(){
+khoangcach = 0;
+  dokhoangcach();
+  Serial.println(khoangcach);
+  if (khoangcach > gioihan || khoangcach == 0)
+  {
+  if ((digitalRead(L_S) == 0) && (digitalRead(R_S) == 0) && (digitalRead(S_S) == 0) && (digitalRead(L_SS) == 0) && (digitalRead(R_SS) == 0)
+  || (digitalRead(L_S) == 1) && (digitalRead(R_S) == 1) && (digitalRead(S_S) == 1) && (digitalRead(L_SS) == 1) && (digitalRead(R_SS) == 1)) {
+    dunglai();
+  }else if ((digitalRead(S_S) == 1)) {
+    dithang();
+  }else if ((digitalRead(L_S) == 1) || (digitalRead(L_SS) == 1)) {
+    disangtrai();
+  }else if ((digitalRead(R_S) == 1) || (digitalRead(R_SS) == 1)) {
+    disangphai();
+  }else{
+    dunglai();
+  }
+  }
+  else{
+    dunglai();
+    delay(300);
+    quaycbsangtrai();
+    dokhoangcach();
+    Serial.println(khoangcach);
+    khoangcachtrai = khoangcach;
+    quaycbsangphai();
+    dokhoangcach();
+    Serial.println(khoangcach);
+    khoangcachphai = khoangcach;
+    if (khoangcachphai >= khoangcachtrai)
+      { 
+      dilui();
+      delay(300);
+      dunglai(); 
+      delay(300);      
+      disangphai();
+      delay(300);
+      disangtrai();
+      delay(300);
+      }
+      else{
+        if (khoangcachphai < khoangcachtrai){ 
+          dilui();
+          delay(300);
+          dunglai();
+          delay(300);
+        disangtrai();
+        delay(300);
+        disangphai();
+        delay(300);
+     
+      
+
+}
+      }
+      
+        
+      }
+    
+}
