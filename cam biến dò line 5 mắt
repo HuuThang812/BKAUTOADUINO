@@ -1,0 +1,30 @@
+const int L_S = 2;
+const int L_SS = 12;
+const int S_S = 3;
+const int R_S = 4;
+const int R_SS = 13;
+
+void setup(){
+  Serial.begin(9600);
+  pinMode(L_S, INPUT);
+  pinMode(L_SS, INPUT);
+  pinMode(R_S, INPUT);
+  pinMode(R_SS, INPUT);
+  pinMode(S_S, INPUT); 
+}
+void loop(){
+  if ((digitalRead(L_S) == 0) && (digitalRead(R_S) == 0) && (digitalRead(S_S) == 0) && (digitalRead(L_SS) == 0) && (digitalRead(R_SS) == 0)){
+    Serial.println(" mất line ");
+  }else if((digitalRead(L_S) == 1) && (digitalRead(R_S) == 1) && (digitalRead(S_S) == 1) && (digitalRead(L_SS) == 1) && (digitalRead(R_SS) == 1)) {
+    Serial.println(" ngã 3");
+  }else if ((digitalRead(S_S) == 1)) {
+    Serial.println("on line");
+  }else if ((digitalRead(L_S) == 1) || (digitalRead(L_SS) == 1)) {
+    Serial.println("rẽ trái");
+  }else if ((digitalRead(R_S) == 1) || (digitalRead(R_SS) == 1)) {
+    Serial.println("rẽ phải");
+  }
+
+  
+  
+}
